@@ -8,6 +8,7 @@ blob_container = app.config['BLOB_CONTAINER']
 storage_url = "https://{}.blob.core.windows.net/".format(app.config['BLOB_ACCOUNT'])
 blob_service = BlobServiceClient(account_url=storage_url, credential=app.config['BLOB_STORAGE_KEY'])
 
+
 class Animal(db.Model):
     __tablename__ = 'animals'
     id = db.Column(db.Integer, primary_key=True)
@@ -26,11 +27,13 @@ class Animal(db.Model):
             randomFilename = str(uuid.uuid1())
             filename = randomFilename + '.' + fileExtension
             try:
-                # TODO: Get a blob client and upload the blob
-                pass
+                # Get a blob client and upload the blob
+                blob_client = blob_service.get_blob_client(container=blob_container, blob=filename)
+                blob_client.upload_blob(file)
                 if self.image_path:
-                    # TODO: Get a blob client and delete the previous blob
-                    pass
+                    # Get a blob client and delete the previous blob
+                    blob_client = blob_service.get_blob_client(container=blob_container, blob=self.image_path)
+                    blob_client.delete_blob()
             except Exception as err:
                 flash(err)
             self.image_path = filename
